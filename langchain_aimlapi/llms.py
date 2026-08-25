@@ -36,7 +36,10 @@ class AimlapiLLM(LLM):
     # -------------------------------------------------------------------------
 
     base_url: str = Field(
-        default="https://api.aimlapi.com/v1/completions",
+        # AI/ML API does not expose a legacy /v1/completions endpoint (404); every
+        # model is served through the chat-completions endpoint instead, so a
+        # single-turn user message stands in for a raw text prompt.
+        default="https://api.aimlapi.com/v1/chat/completions",
         description="Endpoint URL for completion calls",
     )
 
@@ -48,7 +51,7 @@ class AimlapiLLM(LLM):
 
     model: str = Field(
         ...,
-        description="Name of the completion model (e.g., 'gpt-3.5-turbo')",
+        description="Name of the chat model to use (e.g., 'gpt-4o')",
     )
 
     temperature: Optional[float] = Field(
@@ -104,8 +107,8 @@ class AimlapiLLM(LLM):
         """
         Extracts and returns the main text from the API response payload.
         """
-        # API returns list of choices; we take the first
-        return output["choices"][0]["text"]
+        # Chat-completions returns each choice as a message, not a bare "text" field.
+        return output["choices"][0]["message"]["content"]
 
     @property
     def default_params(self) -> Dict[str, Any]:
@@ -149,7 +152,7 @@ class AimlapiLLM(LLM):
         # Merge parameters: defaults + prompt + optional overrides
         payload: Dict[str, Any] = {
             **self.default_params,
-            "prompt": prompt,
+            "messages": [{"role": "user", "content": prompt}],
             "stop": stop_to_use,
             **kwargs,
         }
@@ -199,7 +202,7 @@ class AimlapiLLM(LLM):
         stop_to_use = stop[0] if stop and len(stop) == 1 else stop
         payload: Dict[str, Any] = {
             **self.default_params,
-            "prompt": prompt,
+            "messages": [{"role": "user", "content": prompt}],
             "stop": stop_to_use,
             **kwargs,
         }

@@ -15,8 +15,8 @@ from langchain_aimlapi.constants import AIMLAPI_HEADERS
 class AimlapiImageModel(LLM):
     """Wrapper around AI/ML API's image generation endpoint, fully OpenAI-compatible."""
 
-    model: str = Field(default="dall-e-3")
-    """Which image model to use (e.g., "dall-e-3")."""
+    model: str = Field(default="gpt-image-1")
+    """Which image model to use (e.g., "gpt-image-1")."""
 
     api_key: Optional[str] = Field(
         default=None,

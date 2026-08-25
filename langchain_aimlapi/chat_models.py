@@ -42,8 +42,8 @@ class ChatAimlapi(BaseChatOpenAI):
     model_config = ConfigDict(populate_by_name=True)
 
     # Core parameters for chat invocation
-    model_name: str = Field(default="gpt-3.5-turbo", alias="model")
-    """Name of the chat model to use (e.g., "gpt-3.5-turbo")."""
+    model_name: str = Field(default="gpt-4o", alias="model")
+    """Name of the chat model to use (e.g., "gpt-4o")."""
 
     # Internal flag to switch to mock mode when using dummy key
     _use_mock: bool = PrivateAttr(default=False)

@@ -72,7 +72,7 @@ class AimlapiEmbeddings(BaseModel, Embeddings):
     async_client: Any = Field(default=None, exclude=True)
 
     # Model configuration
-    model: str = Field(default="text-embedding-ada-002")
+    model: str = Field(default="text-embedding-3-small")
     _use_mock: bool = PrivateAttr(default=False)
     dimensions: Optional[int] = None
 
