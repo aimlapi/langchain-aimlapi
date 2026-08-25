@@ -8,7 +8,7 @@ replacement in existing LangChain applications.
 from langchain_aimlapi import ChatAimlapi
 
 llm = ChatAimlapi(
-    model="gpt-3.5-turbo",
+    model="gpt-4o",
     temperature=0.0,
     api_key="YOUR_API_KEY",  # or set AIMLAPI_API_KEY
 )
