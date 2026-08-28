@@ -18,7 +18,7 @@ from langchain_core.callbacks import (
     AsyncCallbackManagerForLLMRun,
     CallbackManagerForLLMRun,
 )
-from langchain_core.language_models.chat_models import BaseChatModel, LangSmithParams
+from langchain_core.language_models.chat_models import LangSmithParams
 from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage
 from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
 from langchain_core.utils import from_env, secret_from_env
@@ -103,10 +103,6 @@ class ChatAimlapi(BaseChatOpenAI):
         params = super()._get_ls_params(stop=stop, **kwargs)
         params["ls_provider"] = "aimlapi"
         return params
-
-    # Inherit tool binding and structured output handling from BaseChatModel
-    bind_tools = BaseChatModel.bind_tools  # type: ignore[assignment]
-    with_structured_output = BaseChatModel.with_structured_output  # type: ignore[assignment]
 
     # -------------------------------------------------------------------------
     # Environment validation and client initialization
