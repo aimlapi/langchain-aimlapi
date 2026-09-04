@@ -23,10 +23,17 @@ from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage
 from langchain_core.outputs import ChatGeneration, ChatGenerationChunk, ChatResult
 from langchain_core.utils import from_env, secret_from_env
 from langchain_openai.chat_models.base import BaseChatOpenAI
-from pydantic import ConfigDict, Field, PrivateAttr, SecretStr, model_validator
+from pydantic import (
+    ConfigDict,
+    Field,
+    PrivateAttr,
+    SecretStr,
+    field_validator,
+    model_validator,
+)
 from typing_extensions import Self
 
-from .constants import AIMLAPI_HEADERS
+from .constants import merge_aimlapi_headers
 
 
 class ChatAimlapi(BaseChatOpenAI):
@@ -49,9 +56,17 @@ class ChatAimlapi(BaseChatOpenAI):
     _use_mock: bool = PrivateAttr(default=False)
 
     # Headers used for all HTTP requests to the API
-    default_headers: Dict[str, str] = Field(
-        default_factory=lambda: AIMLAPI_HEADERS.copy()
-    )
+    default_headers: Dict[str, str] = Field(default_factory=merge_aimlapi_headers)
+
+    @field_validator("default_headers", mode="before")
+    @classmethod
+    def _keep_attribution_headers(cls, value: Any) -> Dict[str, str]:
+        """Merge caller headers over ours instead of replacing them.
+
+        Without this, ``ChatAimlapi(..., default_headers={"X-App": "mine"})``
+        sent ``X-App`` alone and dropped all four attribution headers.
+        """
+        return merge_aimlapi_headers(value)
 
     # API key, read from environment if not provided explicitly
     aimlapi_api_key: Optional[SecretStr] = Field(
