@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "langchain-aimlapi"
-version = "0.1.2"
+version = "0.1.3"
 description = "An integration package connecting Aimlapi and LangChain"
 authors = ["Dmitry Tumanov <d1m7asis@gmail.com>"]
 readme = "README.md"
