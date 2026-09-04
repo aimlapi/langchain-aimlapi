@@ -25,11 +25,12 @@ from pydantic import (
     Field,
     PrivateAttr,
     SecretStr,
+    field_validator,
     model_validator,
 )
 from typing_extensions import Self
 
-from .constants import AIMLAPI_HEADERS
+from .constants import merge_aimlapi_headers
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
@@ -108,7 +109,7 @@ class AimlapiEmbeddings(BaseModel, Embeddings):
 
     # HTTP client overrides
     default_headers: Union[Mapping[str, str], None] = Field(
-        default_factory=lambda: AIMLAPI_HEADERS.copy()
+        default_factory=merge_aimlapi_headers
     )
     default_query: Union[Mapping[str, object], None] = None
     http_client: Union[Any, None] = None
@@ -120,6 +121,16 @@ class AimlapiEmbeddings(BaseModel, Embeddings):
         populate_by_name=True,
         protected_namespaces=(),
     )
+
+    @field_validator("default_headers", mode="before")
+    @classmethod
+    def _keep_attribution_headers(cls, value: Any) -> Mapping[str, str]:
+        """Merge caller headers over ours instead of replacing them.
+
+        ``None`` is treated as "not supplied", so it yields the full set rather
+        than sending an embeddings request with no attribution at all.
+        """
+        return merge_aimlapi_headers(value)
 
     @model_validator(mode="before")
     @classmethod
